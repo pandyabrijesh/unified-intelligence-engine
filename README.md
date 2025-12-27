@@ -1,40 +1,140 @@
-# Unified Intelligence Engine – 21 Features
+# Unified Text Intelligence Engine (Multi-Feature NLP Service)
 
-This project is a **runnable demo** that implements all 21 high-level features we listed,
-in a single reusable engine you can use as:
-- a Python package (`from app.engine import UnifiedEngine`), and
-- an HTTP API (`POST /v1/analyze`).
+This project is a **unified text intelligence engine** that you can reuse across all your apps
+(Product reviews, YouTube transcripts, e-newspapers, Social media, etc.).
 
-## Install
+It wraps multiple features into **one standardized API**:
+
+- Sentiment (3 or 5 class, HuggingFace)
+- Emotion
+- Toxicity / Hate
+- Intent
+- Topic
+- Incident detection
+- NER-lite
+- Location resolution
+- Summary
+- Aspect sentiment
+- Similarity
+- Embeddings
+- Spam detection
+- Text quality scoring
+- Explainability
+- Confidence scoring
+- Action recommendation
+- Standard metadata + model info
+
+---
+
+## 1. Running Locally
+
+### 1.1 Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Configure sentiment backbone (optional)
+### 1.2 Set HuggingFace Sentiment Model
 
-By default the engine will try to load `xlm-roberta-base`, which is NOT a sentiment model.
-You should point it to your **fine-tuned sentiment model** (local path or HF Hub):
+Example multilingual sentiment model:
 
 ```bash
-export SENTIMENT_MODEL_NAME=your-username/your-xlmroberta-sentiment-5class
+export SENTIMENT_MODEL_NAME=cardiffnlp/twitter-xlm-roberta-base-sentiment
 ```
 
-or edit `SentimentAnalyzer` in `app/features/sentiment.py`.
-
-## Run
+Or use your fine‑tuned local model:
 
 ```bash
-uvicorn app.main:app --reload --port 8000
+export SENTIMENT_MODEL_NAME=/path/to/gu_en_sentiment_model
 ```
 
-Open Swagger UI: http://127.0.0.1:8000/docs
-
-## Example request
+### 1.3 Run FastAPI Server
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/v1/analyze"       -H "Content-Type: application/json"       -d '{
-    "text": "Major road accident on SG Highway, traffic is stuck and people are angry.",
+uvicorn app.main:app --reload --host 0.0.0.0 --port 9000
+```
+
+### 1.4 Test API
+
+```bash
+curl http://localhost:9000/healthz
+```
+
+---
+
+## 2. Running with Podman / Docker
+
+### 2.1 Build Container
+
+```bash
+podman build -t unified-intel-engine:latest .
+```
+
+### 2.2 Run on Alternative Host Port (recommended)
+
+```bash
+podman run --rm     -e SENTIMENT_MODEL_NAME=cardiffnlp/twitter-xlm-roberta-base-sentiment     -p 9100:9000     unified-intel-engine:latest
+```
+
+Now access:
+
+- http://localhost:9100/docs
+- http://localhost:9100/healthz
+
+### 2.3 Run with Local Model Mounted
+
+```bash
+podman run --rm     -e SENTIMENT_MODEL_NAME=/models/gu_en_sentiment     -v /Users/brijesh/models:/models:z     -p 9100:9000     unified-intel-engine:latest
+```
+
+---
+
+## 3. Use as a Python Package
+
+### 3.1 Install Package in Editable Mode
+
+```bash
+pip install -e .
+```
+
+### 3.2 Example Usage
+
+```python
+from app import UnifiedEngine
+from app.schemas import AnalyzeRequest
+
+engine = UnifiedEngine()
+
+req = AnalyzeRequest(
+    text="આ સેવા બહુ ઉત્તમ હતી અને મને ખુબ આનંદ આવ્યો.",
+    language="auto",
+    source="product",
+    domain="product"
+)
+
+resp = engine.analyze(req)
+print(resp.sentiment, resp.action)
+```
+
+---
+
+## 4. API Endpoints
+
+### **POST /v1/analyze**
+
+Analyze text with full 21-feature pipeline.
+
+### **GET /healthz**
+
+Healthcheck endpoint.
+
+---
+
+## 5. Example Request
+
+```bash
+curl -X POST "http://localhost:9100/v1/analyze"   -H "Content-Type: application/json"   -d '{
+    "text": "Major accident on SG Highway, people are angry.",
     "language": "auto",
     "source": "social",
     "domain": "incident",
@@ -42,21 +142,22 @@ curl -X POST "http://127.0.0.1:8000/v1/analyze"       -H "Content-Type: applicat
   }'
 ```
 
-This will return a JSON with:
-- sentiment (HF xlm-roberta-based)
-- emotion
-- toxicity
-- intent
-- topic
-- incident
-- simple NER + locations
-- summary
-- aspect sentiment
-- similarity (placeholder)
-- embeddings (hash-based demo)
-- spam
-- quality
-- explainability
-- confidence
-- action recommendation
-- metadata + model_info
+---
+
+## 6. Dockerfile (Already Included)
+
+The Dockerfile in this project builds a production-ready API server using Python 3.11 slim.
+
+---
+
+## 7. Summary
+
+This engine can function as:
+
+- A **local Python library**
+- A **standalone API microservice**
+- A **container deployed on Podman/Docker/Kubernetes**
+
+All apps you develop can use this same unified intelligence core.
+
+---

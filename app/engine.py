@@ -1,4 +1,5 @@
 import time
+from typing import List
 from .schemas import (
     AnalyzeRequest,
     AnalyzeResponse,
@@ -22,6 +23,7 @@ from .features.quality import QualityScorer
 from .features.explainability import ExplainabilityEngine
 from .features.confidence import ConfidenceScorer
 from .features.actions import ActionRecommender
+from .schemas import  BatchAnalyzeRequest, BatchAnalyzeResponse
 
 
 class UnifiedEngine:
@@ -46,6 +48,12 @@ class UnifiedEngine:
         self.confidence = ConfidenceScorer()
         self.actions = ActionRecommender()
 
+    def analyze_batch(self, batch_req: BatchAnalyzeRequest) -> BatchAnalyzeResponse:
+        results: List[AnalyzeResponse] = []
+        for item in batch_req.items:
+            results.append(self.analyze(item))
+        return BatchAnalyzeResponse(items=results)
+    
     def analyze(self, req: AnalyzeRequest) -> AnalyzeResponse:
         start = time.time()
         text_norm, lang = preprocess(req.text, req.language)

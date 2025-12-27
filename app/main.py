@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import AnalyzeRequest, AnalyzeResponse
 from .engine import UnifiedEngine
+from .schemas import AnalyzeRequest, AnalyzeResponse, BatchAnalyzeRequest, BatchAnalyzeResponse
+
 
 app = FastAPI(
     title="Unified Intelligence Engine (21 features)",
@@ -28,6 +30,9 @@ engine = UnifiedEngine()
 def analyze(req: AnalyzeRequest) -> AnalyzeResponse:
     return engine.analyze(req)
 
+@app.post("/v1/analyze-batch", response_model=BatchAnalyzeResponse)
+def analyze_batch(req: BatchAnalyzeRequest) -> BatchAnalyzeResponse:
+    return engine.analyze_batch(req)
 
 @app.get("/healthz")
 def health() -> dict:

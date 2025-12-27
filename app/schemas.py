@@ -1,5 +1,6 @@
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
+from typing import List
 
 
 class AnalyzeRequest(BaseModel):
@@ -122,3 +123,11 @@ class AnalyzeResponse(BaseModel):
     action: ActionResult
     metadata: Dict[str, Any]
     model_info: ModelInfo
+
+
+class BatchAnalyzeRequest(BaseModel):
+    items: List[AnalyzeRequest]
+
+
+class BatchAnalyzeResponse(BaseModel):
+    items: List[AnalyzeResponse]
