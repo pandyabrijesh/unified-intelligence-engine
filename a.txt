@@ -1,0 +1,12 @@
+- SaaS : 
+    - How to get Token : https://cloud.ibm.com/apidocs/watsonx-ai-cp/watsonx-ai-cp-2.3.1#authentication
+    - How to Send Payload Transaction to OpenScale ( SDK + API )  : https://dataplatform.cloud.ibm.com/docs/content/wsj/model/wos-send-model-transactions.html?context=wx#wxgov-send-transactions
+    - OpenScale REST API Doc : https://cloud.ibm.com/apidocs/ai-openscale#introduction
+- OnPrem : 
+    - How to get Token : https://www.ibm.com/docs/en/cloud-paks/cp-data/5.3.x?topic=keys-generating-bearer-token
+    - How to send Payload Transaction to OpenScale  ( SDK + API )  : https://www.ibm.com/docs/en/watsonx/w-and-w/2.3.x?topic=evaluations-sending-model-transactions#wxgov-send-transactions
+    - OpenScale SDK Documentation : https://client-docs.aiopenscale.cloud.ibm.com/html/index.html
+- Default Evaluate timing : https://www.ibm.com/docs/en/watsonx/w-and-w/2.3.x?topic=ai-evaluating-models
+- Cloud OpenPage API : https://cloud.ibm.com/apidocs/openpages
+- L4 Document : https://cp4d-outcomes.feab05c7.public.multi-containers.ibm.com/governance/level-4-practitioner/govern/govern-generative
+- watsonx.governance Github Sample : https://github.com/IBM/watson-openscale-samples/tree/main/WatsonX.Governance

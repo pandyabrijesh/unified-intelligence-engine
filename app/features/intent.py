@@ -1,5 +1,7 @@
 from typing import Dict
+
 from ..schemas import IntentResult
+from .text_match import count_keyword_matches
 
 
 INTENT_KEYWORDS = {
@@ -13,12 +15,20 @@ INTENT_KEYWORDS = {
 
 class IntentAnalyzer:
     def analyze(self, text: str, source: str, domain: str, language: str) -> IntentResult:
-        lower = text.lower()
-        scores: Dict[str, float] = {k: 0.0 for k in INTENT_KEYWORDS}
-        for intent, words in INTENT_KEYWORDS.items():
-            scores[intent] = float(sum(lower.count(w) for w in words))
-        total = sum(scores.values()) or 1.0
-        for k in scores:
-            scores[k] /= total
-        label = max(scores, key=scores.get) if scores else "unknown"
+        scores: Dict[str, float] = {
+            intent: float(count_keyword_matches(text, words))
+            for intent, words in INTENT_KEYWORDS.items()
+        }
+
+        total = sum(scores.values())
+        if total <= 0:
+            return IntentResult(
+                label="unknown",
+                scores={k: 0.0 for k in INTENT_KEYWORDS},
+            )
+
+        for key in scores:
+            scores[key] /= total
+
+        label = max(scores, key=scores.get)
         return IntentResult(label=label, scores=scores)

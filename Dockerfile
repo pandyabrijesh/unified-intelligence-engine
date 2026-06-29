@@ -29,7 +29,7 @@ EXPOSE 9000
 
 # ====== ENV for your sentiment model ======
 # You can override this at runtime with -e if needed
-ENV SENTIMENT_MODEL_NAME=xlm-roberta-base
+ENV SENTIMENT_MODEL_NAME=cardiffnlp/twitter-xlm-roberta-base-sentiment
 
 # Start the app on port 9000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "9000"]

@@ -1,5 +1,7 @@
 from typing import Dict
+
 from ..schemas import EmotionResult
+from .text_match import count_keyword_matches
 
 
 EMOTION_LEXICON = {
@@ -13,12 +15,20 @@ EMOTION_LEXICON = {
 
 class EmotionAnalyzer:
     def analyze(self, text: str, language: str) -> EmotionResult:
-        lower = text.lower()
-        scores: Dict[str, float] = {}
-        for emo, words in EMOTION_LEXICON.items():
-            scores[emo] = float(sum(lower.count(w) for w in words))
-        total = sum(scores.values()) or 1.0
-        for k in scores:
-            scores[k] /= total
-        label = max(scores, key=scores.get) if scores else "neutral"
+        scores: Dict[str, float] = {
+            emo: float(count_keyword_matches(text, words))
+            for emo, words in EMOTION_LEXICON.items()
+        }
+
+        total = sum(scores.values())
+        if total <= 0:
+            return EmotionResult(
+                label="unknown",
+                scores={k: 0.0 for k in EMOTION_LEXICON},
+            )
+
+        for key in scores:
+            scores[key] /= total
+
+        label = max(scores, key=scores.get)
         return EmotionResult(label=label, scores=scores)

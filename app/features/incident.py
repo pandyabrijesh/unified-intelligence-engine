@@ -1,5 +1,7 @@
 from typing import Optional
+
 from ..schemas import IncidentResult
+from .text_match import count_keyword_matches
 
 
 INCIDENT_KEYWORDS = {
@@ -14,15 +16,18 @@ INCIDENT_KEYWORDS = {
 class IncidentAnalyzer:
     def analyze(self, text: str, source: str, domain: str, language: str) -> IncidentResult:
         lower = text.lower()
+
         best_cat: Optional[str] = None
         best_score = 0
+
         for cat, words in INCIDENT_KEYWORDS.items():
-            score = sum(lower.count(w) for w in words)
+            score = count_keyword_matches(text, words)
             if score > best_score:
                 best_score = score
                 best_cat = cat
 
         is_incident = best_score > 0 or domain == "incident"
+
         severity = None
         if is_incident:
             if any(w in lower for w in ["death", "dead", "મૃત્યુ", "मृत"]):
@@ -32,4 +37,8 @@ class IncidentAnalyzer:
             else:
                 severity = "low"
 
-        return IncidentResult(is_incident=is_incident, category=best_cat, severity=severity)
+        return IncidentResult(
+            is_incident=is_incident,
+            category=best_cat,
+            severity=severity,
+        )

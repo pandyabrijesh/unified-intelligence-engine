@@ -1,6 +1,5 @@
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class AnalyzeRequest(BaseModel):
@@ -15,6 +14,8 @@ class AnalyzeRequest(BaseModel):
 class SentimentResult(BaseModel):
     label: str
     score: float
+    raw_label: Optional[str] = None
+    source: Optional[str] = None
 
 
 class EmotionResult(BaseModel):
@@ -44,11 +45,11 @@ class IncidentResult(BaseModel):
 
 
 class NERResult(BaseModel):
-    entities: Dict[str, str]  # text -> label
+    entities: Dict[str, str]
 
 
 class LocationResult(BaseModel):
-    locations: Dict[str, Dict[str, float]]  # name -> {lat, lon}
+    locations: Dict[str, Dict[str, float]]
 
 
 class SummaryResult(BaseModel):
@@ -57,7 +58,7 @@ class SummaryResult(BaseModel):
 
 
 class AspectSentimentResult(BaseModel):
-    aspects: Dict[str, str]  # aspect -> sentiment
+    aspects: Dict[str, str]
 
 
 class SimilarityResult(BaseModel):
@@ -103,7 +104,7 @@ class ModelInfo(BaseModel):
 
 
 class AnalyzeResponse(BaseModel):
-    """Full response with all 21-feature outputs bundled."""
+    """Full response with all bundled outputs."""
     sentiment: SentimentResult
     emotion: EmotionResult
     toxicity: ToxicityResult

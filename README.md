@@ -48,13 +48,31 @@ Or use your fine‑tuned local model:
 export SENTIMENT_MODEL_NAME=/path/to/gu_en_sentiment_model
 ```
 
-### 1.3 Run FastAPI Server
+### 1.3 Optional Gemini Sentiment Fallback
+
+When the original HuggingFace sentiment score is below the configured threshold,
+the engine can call Gemini and return Gemini's sentiment result instead of the
+local sentiment result.
+
+```bash
+export GEMINI_API_KEY=your_api_key
+export GEMINI_MODEL_NAME=gemini-2.5-flash
+export GEMINI_SENTIMENT_FALLBACK_ENABLED=true
+export GEMINI_SENTIMENT_FALLBACK_THRESHOLD=0.60
+```
+
+Set `GEMINI_SENTIMENT_FALLBACK_ENABLED=false` to always use the local sentiment
+model. The threshold is a `0.0` to `1.0` score. If `GEMINI_MODEL_NAME` is not
+available for your API key, the engine discovers a supported `generateContent`
+model automatically.
+
+### 1.4 Run FastAPI Server
 
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 9000
 ```
 
-### 1.4 Test API
+### 1.5 Test API
 
 ```bash
 curl http://localhost:9000/healthz
